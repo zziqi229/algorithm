@@ -1,0 +1,357 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+\documentclass[aspectratio=169,xcolor=dvipsnames]{beamer}
+\usetheme{SimplePlus}
+
+\usepackage{hyperref}
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage[UTF8]{ctex}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{graphics}
+\usepackage{mathtools}
+\usepackage{booktabs}
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[]{前缀和 \&\& 差分} % The short title appears at the bottom of every slide, the full title is only on the title page
+% \subtitle{Subtitle}
+
+\author[Ziqi Zhao] {zziqi229@gmail.com}
+
+\institute[NTU] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+    % Department of Computer Science and Information Engineering \\
+    % National Taiwan University % Your institution for the title page
+}
+\date{\today} % Date, can be changed to a custom date
+
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Overview}
+    \tableofcontents
+\end{frame}
+
+
+\section{开始之前}
+\subsection{下标}
+\begin{frame}{关于起始下标}
+
+    \begin{itemize}
+        \item 在大多数编程语言中数组下标从0开始\\
+              例如\text{$w:[10,11,12,13,14,15]$}中$w[0]=10  w[1]=11$
+
+        \item 在算法竞赛中有时为了方便跳过0下标从1开始\\
+              例如存储6个数字\text{$10,11,12,13,14,15$}\\
+              $w[0]$闲置不使用,$w[1]=10$为实际存储的第一个数字
+
+        \item 根据便利和个人习惯选择起始下标
+    \end{itemize}
+
+\end{frame}
+
+\subsection{集合 与 区间}
+\begin{frame}
+    \frametitle{集合 与 区间}
+    
+    \textbf{集合:}由一个或多个元素构成的整体,元素的个数可以是有限的也可以是无限的
+    \begin{itemize}
+        \item 大于$0$小于$10$的奇数组成的集合:$\{1,3,5,7,9\}$
+        \item 质数集合:$\{2,3,5,7,11,13,\cdots\}$
+        \item 所有正数组成的集合
+        \item $\cdots$
+    \end{itemize}
+    \textbf{区间:}如果x和y是两个在集合里的数,任何x和y之间的数也属于该集合
+    \begin{itemize}
+        \item $[2,7]$表示所有大于等于2小于等于7的数字组成的集合
+        \item $[2,7)$表示所有大于等于2小于7的数字组成的集合
+        \item $(2,7]$表示所有大于2小于等于7的数字组成的集合
+        \item $(2,7)$表示所有大于2小于7的数字组成的集合
+    \end{itemize}
+\end{frame}
+
+
+\section{前缀和}
+\begin{frame}{\href{https://www.luogu.com.cn/problem/P8218}{luoguP8218 求区间和}}
+
+    给定 $n$ 个正整数组成的数列 $a_1, a_2, \cdots, a_n$ 和 $m$ 个区间 $[l_i,r_i]$,
+    分别求这 $m$ 个区间的区间和。对于所有测试数据，$n,m\le10^5,a_i\le 10^4$\\
+    \textbf{输入格式:}\\
+    第一行，为一个正整数 $n$ 。\\
+    第二行，为 $n$ 个正整数 $a_1,a_2, \cdots ,a_n$\\
+    第三行，为一个正整数 $m$ 。\\
+    第 $4$ 到第 $n+m+2$ 行，每行为两个正整数 $l_i,r_i$ ，满足$1\le l_i\le r_i\le n$\\
+    \textbf{输出格式:}\\
+    共 $m$ 行。第 $i$ 行为第 $i$ 组答案的询问。
+
+\end{frame}
+
+\begin{frame}{Solution}
+    约定:所有数组以下标1起始\\[20pt]
+    $s[i]$为$a$中前$i$个数字的和,即$s[i]=a[1]+a[2]+...+a[i]$\\
+
+    如何计算出$s[i]$
+    % \begin{block}{}
+    %     for (int i = 1; i <= n; i++)\\
+    %     \qquad s[i] = s[i - 1] + a[i];
+    % \end{block}
+    \begin{block}{Python}
+        for i in range(1, n + 1):\\
+        \quad s[i] = s[i - 1] + a[i]
+    \end{block}
+
+    对于询问$[l,r]$,可以通过$s$得到:\\
+    $$ans=s[r]-s[l-1]$$
+
+\end{frame}
+
+\begin{frame}{\href{https://www.luogu.com.cn/problem/P1115}{luoguP1115 最大子段和}}
+
+    给出一个长度为 $n(n \le 2 \times 10^5)$ 的序列 $a(-10^4 \le a_i \le 10^4)$，
+    选出其中连续且非空的一段使得这段和最大。\\
+    \textbf{输入格式:}\\
+    第一行是一个整数，表示序列的长度 $n$。\\
+    第二行有 $n$ 个整数，第 $i$ 个整数表示序列的第 $i$ 个数字 $a_i$。\\
+    \textbf{输出格式:}\\
+    输出一行一个整数表示答案。
+
+\end{frame}
+
+\begin{frame}{Solution}
+
+    约定:不使用a[0],从下标1开始\\
+
+    枚举每一个区间$[l,r](l \le r)$使区间和$a[l]+a[l+1]+...+a[r]$最大\\
+    % \begin{block}{}
+    %     for(int l=1;l<=n;l++)\{\\
+    %     \qquad int sum=0;\\
+    %     \qquad for(int r=l;r<=n;r++){\\
+    %     \qquad \qquad sum+=a[r];\\
+    %     \qquad \qquad ans=max(ans,sum);\\
+    %     \qquad }\\
+    %     \}
+    % \end{block}
+    \begin{block}{Python}
+        for l in range(1,n+1):\\
+        \quad s=0\\
+        \quad for r in range(l,n+1):\\
+        \quad \quad s+=a[r]\\
+        \quad \quad ans=max(ans,s)\\
+    \end{block}
+
+\end{frame}
+
+\begin{frame}{Solution}
+
+    计算前缀和$s$,$s[i]=a[1]+a[2]+...+a[i]$\\
+    对于某段区间$[l,r](l \le r)$区间和为$s[r]-s[l-1]$\\
+    本题即为寻找一对$l,r$使$s[r]-s[l-1]$最大
+
+    % \begin{block}{}
+    %     for (int l = 1; l <= n; l++)\\
+    %     \qquad for (int r = l; r <= n; r++)\\
+    %     \qquad \qquad ans = max(ans, s[r] - s[l - 1]);\\
+    % \end{block}
+
+    \begin{block}{Python}
+        for l in range(1,n+1):\\
+        \quad for r in range(l,n+1):\\
+        \quad \quad ans=max(ans,s[r]-s[l-1])\\
+    \end{block}
+\end{frame}
+
+\begin{frame}{Solution}
+
+    \begin{itemize}
+        \item 如果固定$r$,即针对一个$r$,寻找$l$使$s[r]-s[l-1]$最大\\
+        \item 即当$s[l-1]$最小时,$s[r]-s[l-1]$最大\\
+        \item $s[r]-s[l-1]$最大为$s[r]-min(s[0],s[1],s[2],...,s[r-1])$
+    \end{itemize}
+
+
+    % \begin{block}{}
+    %     for (int r = 1; r <= n; r++) \{\\
+    %     \qquad int mi = s[0];\\
+    %     \qquad for (int i = 0; i <= r - 1; i++) // premin[r-1]\\
+    %     \qquad \qquad mi = min(mi, s[i]);\\
+    %     \qquad ans = max(ans, s[r] - mi);\\
+    %     \}
+    % \end{block}
+
+    \begin{block}{Python}
+        for r in range(1,n+1)\\
+        \quad mi = s[0]\\
+        \quad for i in range(r): \# premin[r-1]\\
+        \quad \quad mi = min(mi, s[i])\\
+        \quad ans = max(ans, s[r] - mi)
+    \end{block}
+    % 还是会超时
+
+\end{frame}
+
+\begin{frame}{Solution}
+    仿照前缀和计算$s$的前缀最小值 $premin[i]=min(s[0],s[1],s[2],...,s[i])$\\
+    整体解法为枚举从$1$到$n$枚举$r$,\\
+    确定$r$后通过前缀$min$计算最小的$s[r]-s[l-1]$
+\end{frame}
+
+\begin{frame}{Solution}
+    简化的写法
+    \begin{itemize}
+        \item 如果固定$r$,即针对一个$r$,寻找$l$使$s[r]-s[l-1]$最大\\
+        \item 即当$s[l-1]$最小时,$s[r]-s[l-1]$最大\\
+        \item $s[r]-s[l-1]$最大为$s[r]-min(s[0],s[1],s[2],...,s[r-1])$
+    \end{itemize}
+
+
+    \begin{block}{}
+        int mi = s[0];\\
+        for (int r = 1; r <= n; r++) \{\\
+        \qquad ans = max(ans, s[r] - mi);\\
+        \qquad mi = min(mi, s[r]);\\
+        \}
+    \end{block}
+
+\end{frame}
+
+
+
+\section{差分}
+\begin{frame}{\href{https://www.luogu.com.cn/problem/P2367}{luoguP2367 语文成绩}}
+    有$n$名学生,每次需要给第$x$个到第$y$个学生每人增加$z$分。求所有分数更改完毕后全班最低分。\\
+    \textbf{输入格式:}\\
+    第一行有两个整数 $n (n \le 1 \times 10^6)$,$p(p \le n)$，代表学生数与增加分数的次数。\\
+    第二行有 $n$ 个数，$a_1 \sim a_n$，代表各个学生的初始成绩。\\
+    接下来 $p$ 行，每行有三个数，$x$,$y$,$z$，代表给第 $x$ 个到第 $y$ 个学生每人增加 $z$ 分。\\
+    \textbf{输出格式:}\\
+    输出仅一行，代表更改分数后，全班的最低分。
+\end{frame}
+
+\begin{frame}{Solution}
+
+    暴力,时间复杂度$O(np)$\\
+    % \begin{block}{}
+    %     for (int i = x; i <= y; i++)\\
+    %     \qquad a[i] += z;
+    % \end{block}
+    \begin{block}{Python}
+        for i in range(x, y + 1)\\
+        \quad a[i] += z
+    \end{block}
+    每次修改的时间复杂度是$O(n)$
+
+\end{frame}
+
+\begin{frame}{差分}
+
+    令$C[i]=a[i]-a[i-1]$\\[20pt]
+
+    如果$a[x],a[x+1],...,a[y]$全部加上$z$\\
+    $C$会如何变化?<br>\\[20pt]
+
+    $C[x-1]=a[x-1]-a[x-2]$不变\\
+    \alert{$C[x]=a[x]-a[x-1]$加上$z$}\\
+    $C[x+1]=a[x+1]-a[x]$不变\\
+    ... \\
+    $C[y-1]=a[y-1]-a[y-2]$不变\\
+    $C[y]=a[y]-a[y-1]$不变\\
+    \alert{$C[y+1]=a[y+1]-a[y]$减去$z$}\\
+    $C[y+2]=a[y+2]-a[y+1]$不变
+
+\end{frame}
+
+\begin{frame}{Solution}
+
+    对于$a[x],a[x+1],...,a[y]$全部加上$z$\\
+    相当于$C[x]+=z,C[y+1]-=z$\\
+
+    $O(n)$
+    % \begin{block}{}
+    %     for (int i = x; i <= y; i++)\\
+    %     \qquad a[i] += z;
+    % \end{block}
+    \begin{block}{Python}
+        for i in range(x, y + 1):\\
+        \quad a[i] += z;
+    \end{block}
+    转换为
+
+    $O(2)$
+    % \begin{block}{}
+    %     C[x] += z;\\
+    %     C[y + 1] -= z;
+    % \end{block}
+    \begin{block}{Python}
+        C[x] += z\\
+        C[y + 1] -= z
+    \end{block}
+
+\end{frame}
+
+\begin{frame}{Solution}
+    但是现在只是将修改记录在了$C$上,
+    如何将$C$转换为$a$?
+    \begin{align*}
+        C[1] & =a[1]        \\
+        C[2] & =a[2]-a[1]\\
+        C[3] & =a[3]-a[2]\\
+        \cdots\\
+        C[i] & =a[i]-a[i-1]
+    \end{align*}
+    将上面的式子相加,得到:
+    $$
+        a[i]=C[1]+C[2]+...+C[i]
+    $$
+    $C$做前缀和就可得到$a$
+
+\end{frame}
+
+
+\begin{frame}{\href{https://www.luogu.com.cn/problem/P3406}{luoguP3406 海底高铁}}
+
+    \href{https://www.luogu.com.cn/problem/P3406}{luoguP3406 海底高铁}
+
+\end{frame}
+
+\section{二维版本}
+\subsection{二维前缀和}
+\begin{frame}{\href{https://www.luogu.com.cn/problem/P1719}{luoguP1719 最大加权矩形}}
+    给出一个$n \times n$的矩阵,矩阵中的每个元素为一个整数.从中找出一个子矩形,使得包含的元素和最大.\\
+    $1 \le n \le 120$
+
+    \begin{alertblock}{}
+        二维前缀和
+        $s[i][j]$表示第一行第一列到第$i$行第$j$列这个矩形的和
+    \end{alertblock}
+\end{frame}
+
+
+\subsection{二维差分}
+\begin{frame}
+    \frametitle{luoguP3397地毯}
+
+    \href{https://www.luogu.com.cn/problem/P3397}{luoguP3397地毯}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{题集}
+    二维差分
+    \begin{itemize}
+        \item P6070
+    \end{itemize}
+
+\end{frame}
+
+\end{document}
