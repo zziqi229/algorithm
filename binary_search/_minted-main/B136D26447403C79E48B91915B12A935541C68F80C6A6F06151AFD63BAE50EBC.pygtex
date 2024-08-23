@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+    \PYG{n}{l} \PYG{o}{=} \PYG{l+m+mi}{1}
+    \PYG{n}{r} \PYG{o}{=} \PYG{n}{n}
+    \PYG{n}{ans} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+    \PYG{k}{while} \PYG{n}{l} \PYG{o}{\PYGZlt{}=} \PYG{n}{r}\PYG{p}{:}
+        \PYG{n}{mid} \PYG{o}{=} \PYG{p}{(}\PYG{n}{l} \PYG{o}{+} \PYG{n}{r}\PYG{p}{)} \PYG{o}{//} \PYG{l+m+mi}{2}
+        \PYG{k}{if} \PYG{n}{A}\PYG{p}{[}\PYG{n}{mid}\PYG{p}{]} \PYG{o}{\PYGZgt{}} \PYG{n}{x}\PYG{p}{:}
+            \PYG{n}{r} \PYG{o}{=} \PYG{n}{mid} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}
+        \PYG{k}{elif} \PYG{n}{A}\PYG{p}{[}\PYG{n}{mid}\PYG{p}{]} \PYG{o}{\PYGZlt{}} \PYG{n}{x}\PYG{p}{:}
+            \PYG{n}{l} \PYG{o}{=} \PYG{n}{mid} \PYG{o}{+} \PYG{l+m+mi}{1}
+        \PYG{k}{else}\PYG{p}{:}
+            \PYG{n}{ans} \PYG{o}{=} \PYG{n}{mid}
+            \PYG{n}{r} \PYG{o}{=} \PYG{n}{mid} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}
+\end{Verbatim}
