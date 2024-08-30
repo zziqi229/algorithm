@@ -322,6 +322,7 @@ while l <= r:
 \begin{frame}{practice}
     \href{https://www.luogu.com.cn/problem/P2249}{luoguP2249 查找}\\
     \href{https://www.luogu.com.cn/problem/P1102}{luoguP1102 A-B 数对}
+    \href{https://www.luogu.com.cn/problem/P1678}{luoguP2249 烦恼的高考志愿}
 \end{frame}
 
 
@@ -370,7 +371,174 @@ while l <= r:
         \item 让 $mid=(l+r)/2$，判断$mid$是否可行
         \item 如果$mid$可行，更新$ans=mid$，为了搜索是否有更好的答案，设置$l=mid+1$
         \item 如果$mid$不可行，大于$mid$的解都不可行，降低高度以获取更多木材，设置$r=mid-1$
+        \item 答案具有单调性！
     \end{enumerate}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{cppcode}
+    int l = 0, r = 1e9;
+    int ans = 0;
+    while (l <= r) {
+        int mid = (l + r) / 2;
+        if (judge(mid)) {
+            ans = mid;
+            l = mid + 1;
+        } else
+            r = mid - 1;
+    }
+        \end{cppcode}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{pycode}
+    l = 0
+    r = int(1e9)
+    ans = -1
+    while l <= r:
+        mid = (l + r) // 2
+        if judge(mid):
+            ans = mid
+            l = mid + 1
+        else:
+            r = mid - 1
+        \end{pycode}
+    \end{minipage}
 \end{frame}
 
+
+\begin{frame}{luoguP1182 数列分段 Section II}
+    \href{https://www.luogu.com.cn/problem/P1182}{luoguP1182 数列分段 Section II}
+\end{frame}
+
+\begin{frame}{Solution}
+    注意力得到结论：
+    \begin{itemize}
+        \item 问题可以转化为在限制每段不能超过limit下，最少切多少段，因为能切4段满足限制，随便切一刀也满足限制
+        \item 答案是单调的，limit可以切到足够的段数，limit再大一点当前切段的方案依然合法
+        \item 答案是单调的，limit不能切到足够的段数，limit再小一点限制更严格，也不能切到足够的段
+    \end{itemize}
+    因此，求解最优解的问题通过二分答案转化为如何判断一个答案是否合法
+\end{frame}
+
+\begin{frame}[fragile]{Solution}
+    需要一点贪心\\
+    从左向右开始一段一段划分，让当前的段包含尽量多的数字，留下尽量少的数字\\
+    例如,limit=10\\
+    2 5 2 | 8\\
+    2 5 2 | 9\\
+
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{cppcode}
+    bool judge(int mx) {
+        int cnt = 0;
+        LL s = 0;
+        for (int i = 1; i <= n; i++) {
+            if (s + w[i] <= mx) {
+                s += w[i];
+            } else {
+                cnt++;
+                s = w[i];
+            }
+        }
+        if (s > 0)
+            cnt++;
+        return cnt <= m;
+    }
+        \end{cppcode}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{pycode}
+    def judge(mx):
+        cnt = 0
+        s = 0
+        for i in range(1, n + 1):
+            if s + w[i] <= mx:
+                s += w[i]
+            else:
+                cnt += 1
+                s = w[i]
+        if s > 0:
+            cnt += 1
+        return cnt <= m
+        \end{pycode}
+    \end{minipage}
+    最大值最小，最小值最大问题比较有可能是二分答案，但不一定，可以向这方面思考下
+\end{frame}
+
+\begin{frame}{二分答案}
+    为什么用二分答案
+    \begin{itemize}
+        \item 可以把求解问题最优解转换为判断答案是否合法
+        \item 一般而言，判断性的问题比求最优解的问题简单
+    \end{itemize}
+
+    什么时候才能用二分答案
+    \begin{itemize}
+        \item 答案严格具有单调性
+        \item 答案仅具有单调趋势并不能使用二分答案
+    \end{itemize}
+    例如： \\
+    有 1元、5元、11元面额的纸币，凑出 n 元使用的纸币数量随着 n 变大有变大的趋势，但局部上不严格\\
+    凑出11元需要1张，凑出12元需要2两张...凑出 14 元需要 4 张，但凑 15 元只需要3张
+\end{frame}
+
+
+\begin{frame}{luoguP2678 跳石头}
+    \href{https://www.luogu.com.cn/problem/P2678}{luoguP2678 跳石头}
+\end{frame}
+
+
+\begin{frame}{Solution}
+    观察得到：
+    \begin{itemize}
+        \item 答案具有单调性
+        \item 如果距离 mid 移走的石头数量小于等于m，小于 mid 的距离都可以符合
+        \item 如果距离 mid 需要移走的石头太多了，那么大于 mid 的距离肯定也不满足
+    \end{itemize}
+    问题变为：\\
+    给出距离 mid，要求相邻的石头距离都要大于等于 mid，求最少移走的石头数\\
+    \begin{itemize}
+        \item 记录上一块保留下来的石头的位置，如果当前这块石头和上块距离小于mid，移除这块
+        \item 否则保留这块石头，更新上一块石头为这块
+        \item 倒数第二块石头需要和最后一块石头距离大于等于 dis，否则也需要移除
+    \end{itemize}
+\end{frame}
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{cppcode}
+bool judge(int mid) {
+    int cnt = 0;
+    int last = 0;
+    for (int i = 1; i <= n; i++) {
+        if (pos[i] - last < mid)
+            cnt++;
+        else
+            last = pos[i];
+    }
+    if (L - last < mid) cnt++;
+    return cnt <= m;
+}
+    \end{cppcode}
+\end{minipage}%
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{pycode}
+def judge(min_d):
+    cnt = 0
+    last = x[0]  #上一块石头的位置
+    for i in range(1, n + 1):
+        if x[i] - last < min_d:
+            cnt += 1
+        else:
+            last = x[i]
+    if L - last < mid:
+        cnt += 1
+    return cnt <= m
+    \end{pycode}
+\end{minipage}
 \end{document}
