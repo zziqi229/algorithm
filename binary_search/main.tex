@@ -281,10 +281,96 @@ while l <= r:
 \end{frame}
 
 
+\begin{frame}[fragile]{二分查找}
+    $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，第一个大于等于$x$的位置
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{cppcode}
+    int l = 1, r = n;
+    int ans = -1;
+    while (l <= r) {
+        int mid = (l + r) / 2;
+        if (A[mid] >= x) {
+            ans = mid
+            r = mid - 1;
+        } else(A[mid] < x) {
+            l = mid + 1;
+        }
+    }
+        \end{cppcode}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{pycode}
+    l = 1
+    r = n
+    ans = -1
+    while l <= r:
+        mid = (l + r) // 2
+        if A[mid] >= x:
+            ans = mid
+            r = mid - 1
+        else:
+            l = mid + 1
+        \end{pycode}
+    \end{minipage}
+    
+\end{frame}
+    
+
 \begin{frame}{practice}
     \href{https://www.luogu.com.cn/problem/P2249}{luoguP2249 查找}\\
     \href{https://www.luogu.com.cn/problem/P1102}{luoguP1102 A-B 数对}
 \end{frame}
 
+
+\begin{frame}{luoguP1873 砍树}
+    \href{https://www.luogu.com.cn/problem/P1873}{luoguP1873 砍树}
+\end{frame}
+
+\begin{frame}[fragile]{Solution}
+    \begin{itemize}
+        \item 求解问题的最优解很难。直接求出锯片的最高高度好像无从下手
+        \item 但是判断很简单。给出一个锯片高度，可以轻松判断出这个高度是否能得到足够的木材
+        \item 暴力，从大到小枚举锯片高度并判断是否足够，直到遇到第一个可行的高度，TLE
+    \end{itemize}
+
+    \begin{cppcode}
+    bool judge(int height) {
+        long long sum = 0;
+        for (int i = 1; i <= n; i++)
+            sum += max(h[i] - height, 0);
+        return sum >= m;
+    }
+    for (int height = 1e9; height >= 0; height--) {
+        if (judge(height)) {
+            ans = height;
+            break;
+        }
+    }
+    \end{cppcode}
+\end{frame}
+
+\begin{frame}[fragile]{Solution}
+    暴力做法相当于枚举所有的答案，找到最优解\\
+    可行解：满足条件的解\\
+    最优解：可行解中最好的解\\
+    注意力得到
+    \begin{itemize}
+        \item 当一个高度 H 不可行时，所有大于 H 的高度都不可行，没必要再枚举判断这些高度了
+        \item 当一个高度 H 可行，所有小于 H 的高度都可行，也没必要判断了
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Solution}
+    代入二分查找的思想，只不过这次不是搜索数字的位置，而是搜索最好的答案是什么，即二分答案，通过二分的方式查找答案
+    \begin{enumerate}
+        \item 确定答案的范围，$l=0,r=1e9$，初始设置 $ans=-1$ 表示还未找到可行解
+        \item 让 $mid=(l+r)/2$，判断$mid$是否可行
+        \item 如果$mid$可行，更新$ans=mid$，为了搜索是否有更好的答案，设置$l=mid+1$
+        \item 如果$mid$不可行，大于$mid$的解都不可行，降低高度以获取更多木材，设置$r=mid-1$
+    \end{enumerate}
+\end{frame}
 
 \end{document}
