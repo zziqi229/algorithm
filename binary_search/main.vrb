@@ -1,8 +1,35 @@
 \frametitle{Solution}
-代入二分查找的思想，只不过这次不是搜索数字的位置，而是搜索最好的答案是什么，即二分答案，通过二分的方式查找答案
-    \begin{enumerate}
-        \item 确定答案的范围，$l=0,r=1e9$，初始设置 $ans=-1$ 表示还未找到可行解
-        \item 让 $mid=(l+r)/2$，判断$mid$是否可行
-        \item 如果$mid$可行，更新$ans=mid$，为了搜索是否有更好的答案，设置$l=mid+1$
-        \item 如果$mid$不可行，大于$mid$的解都不可行，降低高度以获取更多木材，设置$r=mid-1$
-    \end{enumerate}
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{cppcode}
+bool judge(int mid) {
+    int cnt = 0;
+    int last = 0;
+    for (int i = 1; i <= n; i++) {
+        if (pos[i] - last < mid)
+            cnt++;
+        else
+            last = pos[i];
+    }
+    if (L - last < mid) cnt++;
+    return cnt <= m;
+}
+    \end{cppcode}
+\end{minipage}%
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \begin{pycode}
+def judge(min_d):
+    cnt = 0
+    last = x[0]  #上一块石头的位置
+    for i in range(1, n + 1):
+        if x[i] - last < min_d:
+            cnt += 1
+        else:
+            last = x[i]
+    if L - last < mid:
+        cnt += 1
+    return cnt <= m
+    \end{pycode}
+\end{minipage}

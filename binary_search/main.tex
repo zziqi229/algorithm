@@ -272,8 +272,8 @@ while l <= r:
         \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，可能有重复的元素，查询$x$如果在这$n$个数字中出现的最后一个位置（最右边的位置）
         \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，第一个大于$x$的位置
         \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，第一个大于等于$x$的位置
-        \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，第一个小于$x$的位置
-        \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，第一个小于等于$x$的位置
+        \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，最后一个小于$x$的位置
+        \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，最后一个小于等于$x$的位置
         \item $n$个数字，$A[1],A[2],\ldots,A[n]$,从小到大排序，查询$x$出现了多少次
     \end{itemize}
     \vspace*{2.5em}
@@ -427,46 +427,46 @@ while l <= r:
     例如,limit=10\\
     2 5 2 | 8\\
     2 5 2 | 9\\
-
+\end{frame}
+\begin{frame}[fragile]{Solution}
     \begin{minipage}{0.45\textwidth}
         \centering
         \begin{cppcode}
-    bool judge(int mx) {
-        int cnt = 0;
-        LL s = 0;
-        for (int i = 1; i <= n; i++) {
-            if (s + w[i] <= mx) {
-                s += w[i];
-            } else {
-                cnt++;
-                s = w[i];
-            }
-        }
-        if (s > 0)
+bool judge(int mx) {
+    int cnt = 0;
+    LL s = 0;
+    for (int i = 1; i <= n; i++) {
+        if (s + w[i] <= mx) {
+            s += w[i];
+        } else {
             cnt++;
-        return cnt <= m;
+            s = w[i];
+        }
     }
+    if (s > 0)
+        cnt++;
+    return cnt <= m;
+}
         \end{cppcode}
     \end{minipage}%
     \hfill
     \begin{minipage}{0.45\textwidth}
         \centering
         \begin{pycode}
-    def judge(mx):
-        cnt = 0
-        s = 0
-        for i in range(1, n + 1):
-            if s + w[i] <= mx:
-                s += w[i]
-            else:
-                cnt += 1
-                s = w[i]
-        if s > 0:
+def judge(mx):
+    cnt = 0
+    s = 0
+    for i in range(1, n + 1):
+        if s + w[i] <= mx:
+            s += w[i]
+        else:
             cnt += 1
-        return cnt <= m
+            s = w[i]
+    if s > 0:
+        cnt += 1
+    return cnt <= m
         \end{pycode}
     \end{minipage}
-    最大值最小，最小值最大问题比较有可能是二分答案，但不一定，可以向这方面思考下
 \end{frame}
 
 \begin{frame}{二分答案}
@@ -484,6 +484,10 @@ while l <= r:
     例如： \\
     有 1元、5元、11元面额的纸币，凑出 n 元使用的纸币数量随着 n 变大有变大的趋势，但局部上不严格\\
     凑出11元需要1张，凑出12元需要2两张...凑出 14 元需要 4 张，但凑 15 元只需要3张
+
+    \vspace*{2.5em}
+
+    最大值最小，最小值最大问题比较有可能是二分答案，但不一定，可以向这方面思考下
 \end{frame}
 
 
@@ -499,14 +503,17 @@ while l <= r:
         \item 如果距离 mid 移走的石头数量小于等于m，小于 mid 的距离都可以符合
         \item 如果距离 mid 需要移走的石头太多了，那么大于 mid 的距离肯定也不满足
     \end{itemize}
+    \vspace*{2.5em}
     问题变为：\\
-    给出距离 mid，要求相邻的石头距离都要大于等于 mid，求最少移走的石头数\\
+    给出距离 mid，要求相邻的石头距离都要大于等于 mid，求最少移走的石头数
     \begin{itemize}
         \item 记录上一块保留下来的石头的位置，如果当前这块石头和上块距离小于mid，移除这块
         \item 否则保留这块石头，更新上一块石头为这块
         \item 倒数第二块石头需要和最后一块石头距离大于等于 dis，否则也需要移除
     \end{itemize}
 \end{frame}
+
+\begin{frame}[fragile]{Solution}
 \begin{minipage}{0.45\textwidth}
     \centering
     \begin{cppcode}
@@ -541,4 +548,6 @@ def judge(min_d):
     return cnt <= m
     \end{pycode}
 \end{minipage}
+\end{frame}
+
 \end{document}
